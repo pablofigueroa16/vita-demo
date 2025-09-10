@@ -51,6 +51,32 @@ const CaretIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// Iconos del submenú: CRM, Amigos, Pagos
+const CRMIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <path d="M3 12h6v8H3z" />
+    <path d="M10.5 8h6v12h-6z" />
+    <path d="M18 4h3v16h-3z" />
+  </svg>
+);
+
+const FriendsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <circle cx="8" cy="8" r="3" />
+    <circle cx="16" cy="11" r="3" />
+    <path d="M2 20a6 6 0 0 1 12 0" />
+    <path d="M11 20a6 6 0 0 1 11 0" />
+  </svg>
+);
+
+const PaymentsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <rect x="2" y="5" width="20" height="14" rx="2" />
+    <path d="M2 10h20" />
+    <path d="M7 15h3" />
+    <path d="M12 15h5" />
+  </svg>
+);
 const items: NavItem[] = [
   { name: "Marketplace", href: "#", Icon: MarketplaceIcon },
   { name: "Tiendas", href: "#", Icon: StoreIcon },
@@ -121,8 +147,9 @@ export default function Navbar() {
               </li>
 
               {/* 3) Toggle caret (nuevo) */}
-              <li>
+              <li className="relative">
                 <button
+                  id="more-toggle"
                   type="button"
                   onClick={() => setExpanded((v) => !v)}
                   aria-label={expanded ? "Contraer" : "Expandir"}
@@ -130,8 +157,50 @@ export default function Navbar() {
                   className="group flex items-center justify-center gap-2 rounded-lg px-2.5 sm:px-3 py-2 transition-colors outline-none text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800"
                 >
                   <CaretIcon className={`size-5 sm:size-[22px] text-current transition-transform ${expanded ? "rotate-180" : "rotate-0"}`} />
-                  <span className="hidden sm:inline text-sm font-medium">{expanded ? "Menú" : "Menú"}</span>
+                  <span className="hidden sm:inline text-sm font-medium">Menú</span>
                 </button>
+
+                {/* Submenú compacto */}
+                <div
+                  role="menu"
+                  aria-labelledby="more-toggle"
+                  className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-56 sm:w-64 rounded-xl border border-border-subtle bg-bg-800/95 backdrop-blur p-2 shadow-lg shadow-black/30 transition-all duration-150 ease-out origin-top ${
+                    expanded ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+                  }`}
+                >
+                  <ul className="grid grid-cols-3 gap-2 sm:gap-3">
+                    <li>
+                      <a
+                        href="#"
+                        role="menuitem"
+                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                      >
+                        <CRMIcon className="size-5 sm:size-6 text-current" />
+                        <span className="text-xs sm:text-[13px] font-medium">CRM</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        role="menuitem"
+                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                      >
+                        <FriendsIcon className="size-5 sm:size-6 text-current" />
+                        <span className="text-xs sm:text-[13px] font-medium">Amigos</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        role="menuitem"
+                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                      >
+                        <PaymentsIcon className="size-5 sm:size-6 text-current" />
+                        <span className="text-xs sm:text-[13px] font-medium">Pagos</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
               </li>
 
               {/* 4) Tercer item original */}
