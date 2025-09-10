@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  /* Brand scale (azul principal) */
+  --color-primary-50:  #EDF3FF;
+  --color-primary-100: #D6E3FF;
+  --color-primary-200: #B0C8FF;
+  --color-primary-300: #8AACFF;
+  --color-primary-400: #6390FF;
+  --color-primary-500: #2E67FF;  /* marca */
+  --color-primary-600: #2457E9;  /* recomendado para botón sólido (texto blanco, AA) */
+  --color-primary-700: #1E49C4;
+  --color-primary-800: #1A3C9D;
+  --color-primary-900: #152F79;
+
+  /* Fondos y superficies (dark) */
+  --color-bg-950: #0B0F17;  /* raíz */
+  --color-bg-900: #0F121A;  /* base */
+  --color-bg-800: #151A24;  /* elevado */
+  --color-bg-hover: #161E2B;  /* sutil */
+  --color-bg-overlay: rgb(0 0 0 / 0.60);
+
+  /* Texto (alta legibilidad en dark) */
+  --color-text-strong:   #F5F7FA;
+  --color-text-primary:  #D9E0EB;
+  --color-text-secondary:#A9B4C6;
+  --color-text-muted:    #8190A6;
+  --color-text-on-primary: #FFFFFF;
+
+  /* Bordes / divisores */
+  --color-border-subtle: #1E2633;
+  --color-divider:       #202A38;
+
+  /* Acentos armonizados */
+  --color-success-500: #2BD673;
+  --color-warning-500: #F5B64B;
+  --color-danger-500:  #FF5C70;
+  --color-info-500:    #2FD3FF;
+  --color-accent-violet-500: #8C7CFF;
+
+  /* Estados interactivos (tokens semánticos) */
+  --color-btn-primary:           var(--color-primary-600);
+  --color-btn-primary-hover:     var(--color-primary-500);
+  --color-btn-primary-active:    var(--color-primary-700);
+  --color-btn-primary-text:      var(--color-text-on-primary);
+  --color-btn-primary-disabled:  #1A2540;
+  --color-btn-primary-disabled-text: #6C7AA2;
+
+  --color-link:        var(--color-primary-300);
+  --color-link-hover:  var(--color-primary-200);
+  --color-visited:     #A996FF;
+  --color-ring:        var(--color-primary-400);
+  --color-ring-strong: var(--color-primary-500);
+}
+
+/* Dark como tema por defecto (mejora contraste/UA) */
+:root { color-scheme: dark; }
+
+/* Base mínima para aplicar la paleta en toda la app */
+@layer base {
+  html, body {
+    background-color: var(--color-bg-900);
+    color: var(--color-text-primary);
+  }
+
+  a {
+    color: var(--color-link);
+  }
+  a:hover {
+    color: var(--color-link-hover);
+  }
 }
