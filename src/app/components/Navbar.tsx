@@ -78,9 +78,9 @@ const PaymentsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 const items: NavItem[] = [
-  { name: "Marketplace", href: "#", Icon: MarketplaceIcon },
-  { name: "Tiendas", href: "#", Icon: StoreIcon },
-  { name: "Chat", href: "#", Icon: ChatIcon },
+  { name: "Marketplace", href: "/", Icon: MarketplaceIcon },
+  { name: "Tiendas", href: "/tiendas", Icon: StoreIcon },
+  { name: "Chat", href: "/chat", Icon: ChatIcon },
   { name: "Notificaciones", href: "#", Icon: BellIcon },
 ];
 
@@ -170,14 +170,15 @@ export default function Navbar() {
                 >
                   <ul className="grid grid-cols-3 gap-2 sm:gap-3">
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        href="/CRM"
                         role="menuitem"
                         className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                        onClick={() => setExpanded(false)}
                       >
                         <CRMIcon className="size-5 sm:size-6 text-current" />
                         <span className="text-xs sm:text-[13px] font-medium">CRM</span>
-                      </a>
+                      </Link>
                     </li>
                     <li>
                       <a
@@ -190,14 +191,15 @@ export default function Navbar() {
                       </a>
                     </li>
                     <li>
-                      <a
-                        href="#"
+                      <Link
+                        href="/Pagos"
                         role="menuitem"
                         className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                        onClick={() => setExpanded(false)}
                       >
                         <PaymentsIcon className="size-5 sm:size-6 text-current" />
                         <span className="text-xs sm:text-[13px] font-medium">Pagos</span>
-                      </a>
+                      </Link>
                     </li>
                   </ul>
                 </div>

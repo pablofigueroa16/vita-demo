@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Tech Accesorios - portada">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#111b3b"/>
+      <stop offset="55%" stop-color="#1d2b6b"/>
+      <stop offset="100%" stop-color="#2e3aa0"/>
+    </linearGradient>
+    <radialGradient id="glow2" cx="55%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#7aa3ff" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#7aa3ff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#7aa3ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g2)"/>
+  <rect x="0" y="0" width="1200" height="675" fill="url(#glow2)"/>
+  <!-- Patrón técnico -->
+  <g stroke="#8fb0ff" stroke-opacity="0.18" fill="none">
+    <rect x="80" y="80" width="220" height="140" rx="12"/>
+    <rect x="980" y="440" width="140" height="100" rx="12"/>
+    <circle cx="220" cy="540" r="60"/>
+  </g>
+  <!-- Chip central -->
+  <g transform="translate(600 338)">
+    <rect x="-110" y="-110" width="220" height="220" rx="22" fill="#1a2d72" stroke="#8fb0ff" stroke-opacity="0.6"/>
+    <rect x="-58" y="-58" width="116" height="116" rx="16" fill="#2b3ea7"/>
+    <g stroke="#8fb0ff" stroke-width="6">
+      <line x1="-140" y1="-40" x2="-110" y2="-40"/>
+      <line x1="-140" y1="0" x2="-110" y2="0"/>
+      <line x1="-140" y1="40" x2="-110" y2="40"/>
+      <line x1="140" y1="-40" x2="110" y2="-40"/>
+      <line x1="140" y1="0" x2="110" y2="0"/>
+      <line x1="140" y1="40" x2="110" y2="40"/>
+      <line x1="-40" y1="-140" x2="-40" y2="-110"/>
+      <line x1="0" y1="-140" x2="0" y2="-110"/>
+      <line x1="40" y1="-140" x2="40" y2="-110"/>
+      <line x1="-40" y1="140" x2="-40" y2="110"/>
+      <line x1="0" y1="140" x2="0" y2="110"/>
+      <line x1="40" y1="140" x2="40" y2="110"/>
+    </g>
+  </g>
+  <!-- Marco sutil -->
+  <rect x="16" y="16" width="1168" height="643" rx="24" ry="24" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+</svg>
