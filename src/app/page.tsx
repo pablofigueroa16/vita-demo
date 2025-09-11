@@ -297,14 +297,14 @@ const products: Product[] = [
   { id: "gr-1", name: "Dark Ember", category: "Moda", price: 79.0, rating: 5, image: "/tiendas/gold-rosse/dark-ember/10.jpg" },
   { id: "gr-2", name: "Drako Red", category: "Moda", price: 85.0, rating: 5, image: "/tiendas/gold-rosse/drako-red/1.jpg" },
   { id: "gr-3", name: "Glacier", category: "Moda", price: 69.0, rating: 4, image: "/tiendas/gold-rosse/glacier/6.jpg" },
-  { id: "p-1", name: "Auriculares Bluetooth", category: "Tecnología", price: 39.99, rating: 4 },
-  { id: "p-2", name: "Smartwatch Pro", category: "Tecnología", price: 129.0, rating: 5 },
-  { id: "p-3", name: "Cafetera Espresso", category: "Hogar", price: 89.5, rating: 4 },
-  { id: "p-4", name: "Set de Sábanas 400 hilos", category: "Hogar", price: 59.9, rating: 5 },
-  { id: "p-5", name: "Zapatillas Urban", category: "Moda", price: 49.0, rating: 4 },
-  { id: "p-6", name: "Chaqueta Impermeable", category: "Moda", price: 79.9, rating: 5 },
-  { id: "p-7", name: "Suplemento Omega-3", category: "Salud", price: 19.9, rating: 4 },
-  { id: "p-8", name: "Báscula Inteligente", category: "Salud", price: 34.9, rating: 3 },
+  { id: "p-1", name: "Auriculares Bluetooth", category: "Tecnología", price: 39.99, rating: 4 ,image: "/tiendas/auriculares.jpg"},
+  { id: "p-2", name: "Smartwatch Pro", category: "Tecnología", price: 129.0, rating: 5 , image: "/tiendas/smart.webp"},
+  { id: "p-3", name: "Cafetera Espresso", category: "Hogar", price: 89.5, rating: 4,image: "/tiendas/cafetera.jpg" },
+  { id: "p-4", name: "Set de Sábanas 400 hilos", category: "Hogar", price: 59.9, rating: 5,image: "/tiendas/sabanas.jpeg" },
+  { id: "p-5", name: "Zapatillas Urban", category: "Moda", price: 49.0, rating: 4 ,image: "/tiendas/zapatillas.jpg"},
+  { id: "p-6", name: "Chaqueta Impermeable", category: "Moda", price: 79.9, rating: 5 ,image: "/tiendas/chaqueta.webp"},
+  { id: "p-7", name: "Suplemento Omega-3", category: "Salud", price: 19.9, rating: 4 ,image: "/tiendas/suplemento.jpg"},
+  { id: "p-8", name: "Báscula Inteligente", category: "Salud", price: 34.9, rating: 3 ,image: "/tiendas/bascula.webp"},
 ];
 
 function formatCurrency(n: number) {
