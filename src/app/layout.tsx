@@ -24,8 +24,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <script
+          // Establece el tema antes de la hidratación para evitar FOUC
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try {
+  const ls = localStorage.getItem('theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = ls ? ls : (systemPrefersDark ? 'dark' : 'light');
+  const root = document.documentElement;
+  if (theme === 'light') {
+    root.setAttribute('data-theme', 'light');
+  } else {
+    root.removeAttribute('data-theme');
+  }
+  root.setAttribute('data-theme-transition', '');
+} catch (_) {} })();`,
+          }}
+        />
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} data-theme-transition>
         <Navbar />
         <main className="pt-16">{children}</main>
       </body>

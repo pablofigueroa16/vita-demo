@@ -79,3 +79,47 @@ body {
     color: var(--color-link-hover);
   }
 }
+
+/* ---------- Tema claro (light) ---------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* Fondos y superficies (light) */
+  --color-bg-950: #FFFFFF; /* raíz */
+  --color-bg-900: #F9FBFF; /* base */
+  --color-bg-800: #F1F4FA; /* elevado */
+  --color-bg-hover: #ECF2FF; /* sutil */
+  --color-bg-overlay: rgb(255 255 255 / 0.60);
+
+  /* Texto (alta legibilidad en light) */
+  --color-text-strong:   #0B1220; /* casi negro */
+  --color-text-primary:  #1C2434; /* gris 900/800 */
+  --color-text-secondary:#46546B; /* gris 600 */
+  --color-text-muted:    #6B7A90; /* gris 500 */
+  --color-text-on-primary: #FFFFFF;
+
+  /* Bordes / divisores */
+  --color-border-subtle: #E3E8F0;
+  --color-divider:       #E6EBF3;
+
+  /* Estados interactivos (tokens semánticos) */
+  --color-btn-primary:           var(--color-primary-600);
+  --color-btn-primary-hover:     var(--color-primary-700);
+  --color-btn-primary-active:    var(--color-primary-800);
+  --color-btn-primary-text:      var(--color-text-on-primary);
+  --color-btn-primary-disabled:  #CBD7FF;
+  --color-btn-primary-disabled-text: #6B7DB6;
+
+  --color-link:        var(--color-primary-600);
+  --color-link-hover:  var(--color-primary-700);
+  --color-visited:     #6D28D9; /* púrpura accesible */
+  --color-ring:        var(--color-primary-500);
+  --color-ring-strong: var(--color-primary-600);
+}
+
+/* Transiciones suaves al cambiar de tema (respetando accesibilidad) */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme-transition] *, [data-theme-transition] *::before, [data-theme-transition] *::after {
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, fill 200ms ease, stroke 200ms ease;
+  }
+}

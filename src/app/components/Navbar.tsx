@@ -44,6 +44,19 @@ const BellIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// Icono de tema (sol/luna)
+const SunIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+  </svg>
+);
+const MoonIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
 // Nuevo ícono caret (flecha) que rota al abrir/cerrar
 const CaretIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
@@ -103,6 +116,25 @@ export default function Navbar() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
   const menuRef = useRef<HTMLLIElement | null>(null);
+
+  // Estado de tema (derivado del DOM y localStorage)
+  const [isLight, setIsLight] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const ls = localStorage.getItem("theme");
+    if (ls) return ls === "light";
+    return !window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isLight) {
+      root.setAttribute("data-theme", "light");
+      localStorage.setItem("theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("theme", "dark");
+    }
+  }, [isLight]);
 
   // Cerrar al hacer click fuera o al presionar Escape
   useEffect(() => {
@@ -311,8 +343,26 @@ export default function Navbar() {
             </ul>
           </div>
 
-          {/* Derecha: Avatar en círculo */}
-          <div className="flex items-center">
+          {/* Derecha: Avatar + Interruptor de tema */}
+          <div className="flex items-center gap-2">
+            {/* Interruptor de tema */}
+            <button
+              type="button"
+              onClick={() => setIsLight((v) => !v)}
+              className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+              aria-pressed={isLight}
+              aria-label={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
+              title={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
+            >
+              <span className="sr-only">{isLight ? "Modo claro activado" : "Modo oscuro activado"}</span>
+              {isLight ? (
+                <SunIcon className="size-5 text-current" />
+              ) : (
+                <MoonIcon className="size-5 text-current" />
+              )}
+            </button>
+
+            {/* Avatar */}
             <button
               type="button"
               className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-shadow"
