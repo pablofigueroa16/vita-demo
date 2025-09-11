@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 function CRMIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -258,7 +259,14 @@ function categoryVisuals(cat: string) {
   }
 }
 
-function ProductImage({ category }: { category: string }) {
+function ProductImage({ category, imageUrl, alt }: { category: string; imageUrl?: string; alt?: string }) {
+  if (imageUrl) {
+    return (
+      <div className="relative w-full aspect-[4/3] overflow-hidden rounded-xl border border-border-subtle bg-bg-900/60">{/* Imagen representativa */}
+        <img src={imageUrl} alt={alt ?? category} className="absolute inset-0 w-full h-full object-cover" />
+      </div>
+    );
+  }
   const { gradient, Icon } = categoryVisuals(category);
   return (
     <div className={`relative w-full aspect-[4/3] overflow-hidden rounded-xl bg-gradient-to-br ${gradient} border border-border-subtle`}>{/* Imagen representativa */}
@@ -282,9 +290,13 @@ type Product = {
   category: typeof productCategories[number] | Exclude<string, "Todos">;
   price: number;
   rating: number; // 0..5
+  image?: string;
 };
 
 const products: Product[] = [
+  { id: "gr-1", name: "Dark Ember", category: "Moda", price: 79.0, rating: 5, image: "/tiendas/gold-rosse/dark-ember/10.jpg" },
+  { id: "gr-2", name: "Drako Red", category: "Moda", price: 85.0, rating: 5, image: "/tiendas/gold-rosse/drako-red/1.jpg" },
+  { id: "gr-3", name: "Glacier", category: "Moda", price: 69.0, rating: 4, image: "/tiendas/gold-rosse/glacier/6.jpg" },
   { id: "p-1", name: "Auriculares Bluetooth", category: "Tecnología", price: 39.99, rating: 4 },
   { id: "p-2", name: "Smartwatch Pro", category: "Tecnología", price: 129.0, rating: 5 },
   { id: "p-3", name: "Cafetera Espresso", category: "Hogar", price: 89.5, rating: 4 },
@@ -367,7 +379,7 @@ function ProductsSection() {
             className="group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm p-4 sm:p-5 md:p-6 flex flex-col"
           >
             {/* Imagen representativa */}
-            <ProductImage category={p.category} />
+            <ProductImage category={p.category} imageUrl={p.image} alt={p.name} />
  
             <div className="mt-3 flex items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-900/60 px-2.5 py-1 text-[11px] sm:text-xs text-text-secondary">
@@ -426,16 +438,31 @@ type Store = {
   rating: number; // 0..5
   productsCount: number;
   salesCount: number;
+  slug: string;
+  logo?: string;
 };
 
 const stores: Store[] = [
-  { id: "s-1", name: "TechNova", category: "Tecnología", creator: "@lucas", rating: 5, productsCount: 120, salesCount: 4300 },
-  { id: "s-2", name: "Casa & Confort", category: "Hogar", creator: "@ana", rating: 4, productsCount: 80, salesCount: 2100 },
-  { id: "s-3", name: "Urban Outfit", category: "Moda", creator: "@diego", rating: 5, productsCount: 150, salesCount: 5600 },
+  { id: "s-1", name: "Gold Rosse", category: "Moda", creator: "Jose Rubio", rating: 5, productsCount: 24, salesCount: 1200, slug: "gold-rosse", logo: "/tiendas/gold-rosse/goldrosse-logo.jpg" },
+  { id: "s-2", name: "Casa & Confort", category: "Hogar", creator: "@ana", rating: 4, productsCount: 80, salesCount: 2100, slug: "casa-confort" },
+  { id: "s-3", name: "Urban Outfit", category: "Moda", creator: "@diego", rating: 5, productsCount: 150, salesCount: 5600, slug: "urban-outfit" },
 ];
 
-function StoreImage({ category }: { category: string }) {
-  const { gradient, Icon } = categoryVisuals(category);
+function StoreImage({ store }: { store: Store }) {
+  if (store.logo) {
+    return (
+      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl border border-border-subtle bg-bg-900/60">
+        <img
+          src={store.logo}
+          alt={`Logo de ${store.name}`}
+          className="absolute inset-0 w-full h-full object-contain p-4"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    );
+  }
+  const { gradient, Icon } = categoryVisuals(store.category);
   return (
     <div className={`relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-gradient-to-br ${gradient} border border-border-subtle`}>
       <div className="absolute inset-0 grid place-items-center text-primary-300/90">
@@ -452,7 +479,7 @@ function StoresSection() {
         {stores.map((s) => (
           <article key={s.id} className="group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm p-4 sm:p-5 md:p-6 flex flex-col">
             {/* Imagen */}
-            <StoreImage category={s.category} />
+            <StoreImage store={s} />
 
             <div className="mt-3 flex items-center gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-900/60 px-2.5 py-1 text-[11px] sm:text-xs text-text-secondary">
@@ -482,7 +509,7 @@ function StoresSection() {
             </div>
 
             <div className="mt-3 sm:mt-4 flex items-center gap-2">
-              <button className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm font-medium bg-primary-600 hover:bg-primary-500 active:bg-primary-700 text-text-on-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400" aria-label={`Ver tienda ${s.name}`}>Ver</button>
+              <Link href={`/${s.slug}`} className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm font-medium bg-primary-600 hover:bg-primary-500 active:bg-primary-700 text-text-on-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400" aria-label={`Ver tienda ${s.name}`}>Ver</Link>
               <button className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm font-medium bg-bg-900/60 text-text-primary border border-border-subtle hover:bg-bg-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400" aria-label={`Contactar tienda ${s.name}`}>Contactar</button>
             </div>
           </article>

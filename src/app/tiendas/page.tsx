@@ -26,6 +26,16 @@ function EyeIcon(props: React.SVGProps<SVGSVGElement>) {
 const stores = [
   {
     id: "s-1",
+    name: "Gold Rosse",
+    slug: "gold-rosse",
+    status: "Activa",
+    productsUsed: 3,
+    productsLimit: 5,
+    monthSales: 1200,
+    visits: 340,
+  },
+  {
+    id: "s-2",
     name: "Belleza Natural",
     slug: "belleza-natural",
     status: "Activa",
@@ -33,16 +43,6 @@ const stores = [
     productsLimit: 5,
     monthSales: 1890,
     visits: 234,
-  },
-  {
-    id: "s-2",
-    name: "Tech Accesorios",
-    slug: "tech-accesorios",
-    status: "Activa",
-    productsUsed: 3,
-    productsLimit: 5,
-    monthSales: 560,
-    visits: 89,
   },
 ] as const;
 

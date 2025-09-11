@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Tipado de item de navegación
 type NavItem = {
@@ -77,6 +77,21 @@ const PaymentsIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M12 15h5" />
   </svg>
 );
+
+// Nuevos íconos
+const SearchIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M21 21l-3.6-3.6" />
+  </svg>
+);
+
+const SettingsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-.33 1.82l.02.06a2 2 0 1 1-3.38 0l.02-.06A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82-.33l-.06.02a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1 1.65 1.65 0 0 0-1.82-.33l-.06.02a2 2 0 1 1 0-3.38l.06.02A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6c.38 0 .75-.14 1-.4a1.65 1.65 0 0 0 .33-1.82l-.02-.06a2 2 0 1 1 3.38 0l-.02.06c-.13.42-.03.88.25 1.22.25.26.6.4.96.4.46 0 .9-.18 1.22-.5l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06c-.32.32-.5.76-.5 1.22 0 .36.14.71.4.96.34.28.8.38 1.22.25l.06-.02a2 2 0 1 1 0 3.38l-.06-.02c-.42-.13-.88-.03-1.22.25-.26.25-.4.6-.4.96z" />
+  </svg>
+);
 const items: NavItem[] = [
   { name: "Marketplace", href: "/", Icon: MarketplaceIcon },
   { name: "Tiendas", href: "/tiendas", Icon: StoreIcon },
@@ -87,6 +102,27 @@ const items: NavItem[] = [
 export default function Navbar() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const menuRef = useRef<HTMLLIElement | null>(null);
+
+  // Cerrar al hacer click fuera o al presionar Escape
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExpanded(false);
+    };
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (menuRef.current && !menuRef.current.contains(target)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [expanded]);
   const Icon0 = items[0].Icon;
   const Icon1 = items[1].Icon;
   const Icon2 = items[2].Icon;
@@ -147,59 +183,95 @@ export default function Navbar() {
               </li>
 
               {/* 3) Toggle caret (nuevo) */}
-              <li className="relative">
-                <button
-                  id="more-toggle"
-                  type="button"
-                  onClick={() => setExpanded((v) => !v)}
-                  aria-label={expanded ? "Contraer" : "Expandir"}
-                  aria-expanded={expanded}
-                  className="group flex items-center justify-center gap-2 rounded-lg px-2.5 sm:px-3 py-2 transition-colors outline-none text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800"
-                >
-                  <CaretIcon className={`size-5 sm:size-[22px] text-current transition-transform ${expanded ? "rotate-180" : "rotate-0"}`} />
-                  <span className="hidden sm:inline text-sm font-medium">Menú</span>
-                </button>
-
-                {/* Submenú compacto */}
-                <div
-                  role="menu"
-                  aria-labelledby="more-toggle"
-                  className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-56 sm:w-64 rounded-xl border border-border-subtle bg-bg-800/95 backdrop-blur p-2 shadow-lg shadow-black/30 transition-all duration-150 ease-out origin-top ${
-                    expanded ? "opacity-100 scale-100 translate-y-0 pointer-events-auto" : "opacity-0 scale-95 -translate-y-1 pointer-events-none"
+              <li ref={menuRef} className="relative">
+                 <button
+                   id="more-toggle"
+                   type="button"
+                   onClick={() => setExpanded((v) => !v)}
+                   aria-label={expanded ? "Contraer" : "Expandir"}
+                   aria-expanded={expanded}
+                  aria-controls="more-menu"
+                  className={`w-full group flex items-center justify-center sm:justify-start gap-2 rounded-lg px-2.5 sm:px-3 py-2 transition-colors outline-none ${
+                    expanded
+                      ? "bg-btn-primary text-btn-primary-text ring-2 ring-primary-400/60 ring-offset-2 ring-offset-bg-800 shadow-sm"
+                      : "text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800"
                   }`}
+                  >
+                   <CaretIcon className={`size-5 sm:size-[22px] text-current transition-transform ${expanded ? "rotate-180" : "rotate-0"}`} />
+                   <span className="hidden sm:inline text-sm font-medium">Menú</span>
+                 </button>
+
+                 {/* Submenú compacto */}
+                 <div
+                   role="menu"
+                   aria-labelledby="more-toggle"
+                   id="more-menu"
+                  className={`absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-64 sm:w-[560px] rounded-xl border border-border-subtle bg-bg-800/95 backdrop-blur p-2 shadow-lg shadow-black/30 origin-top transform-gpu overflow-hidden ${
+                    expanded ? "pointer-events-auto opacity-100 translate-y-0 scale-y-100" : "pointer-events-none opacity-0 -translate-y-1 scale-y-95"
+                  } transition-[opacity,transform] duration-200 ease-out`}
                 >
-                  <ul className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <ul className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-3">
+                    {/* Buscar (izquierda de CRM) */}
+                    <li>
+                      <a
+                        href="#"
+                        role="menuitem"
+                        className={`group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-all duration-200 ${expanded ? "opacity-100 translate-y-0 delay-75" : "opacity-0 translate-y-1 delay-0"}`}
+                        onClick={() => setExpanded(false)}
+                        aria-label="Buscar"
+                      >
+                        <SearchIcon className="size-5 sm:size-6 text-current" />
+                        <span className="text-xs sm:text-[13px] font-medium">Buscar</span>
+                      </a>
+                    </li>
+                    {/* CRM */}
                     <li>
                       <Link
                         href="/CRM"
                         role="menuitem"
-                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                        className={`group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-all duration-200 ${expanded ? "opacity-100 translate-y-0 delay-100" : "opacity-0 translate-y-1 delay-0"}`}
                         onClick={() => setExpanded(false)}
                       >
                         <CRMIcon className="size-5 sm:size-6 text-current" />
                         <span className="text-xs sm:text-[13px] font-medium">CRM</span>
                       </Link>
                     </li>
+                    {/* Amigos */}
                     <li>
                       <a
                         href="#"
                         role="menuitem"
-                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                        className={`group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-all duration-200 ${expanded ? "opacity-100 translate-y-0 delay-150" : "opacity-0 translate-y-1 delay-0"}`}
+                        onClick={() => setExpanded(false)}
                       >
                         <FriendsIcon className="size-5 sm:size-6 text-current" />
                         <span className="text-xs sm:text-[13px] font-medium">Amigos</span>
                       </a>
                     </li>
+                    {/* Pagos */}
                     <li>
                       <Link
                         href="/Pagos"
                         role="menuitem"
-                        className="group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                        className={`group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-all duration-200 ${expanded ? "opacity-100 translate-y-0 delay-200" : "opacity-0 translate-y-1 delay-0"}`}
                         onClick={() => setExpanded(false)}
                       >
                         <PaymentsIcon className="size-5 sm:size-6 text-current" />
                         <span className="text-xs sm:text-[13px] font-medium">Pagos</span>
                       </Link>
+                    </li>
+                    {/* Configuración (derecha de Pagos) */}
+                    <li>
+                      <a
+                        href="#"
+                        role="menuitem"
+                        className={`group flex flex-col items-center gap-1 rounded-md p-2 text-text-secondary hover:text-text-strong hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-all duration-200 ${expanded ? "opacity-100 translate-y-0 delay-300" : "opacity-0 translate-y-1 delay-0"}`}
+                        onClick={() => setExpanded(false)}
+                        aria-label="Configuración"
+                      >
+                        <SettingsIcon className="size-5 sm:size-6 text-current" />
+                        <span className="text-xs sm:text-[13px] font-medium">Configuración</span>
+                      </a>
                     </li>
                   </ul>
                 </div>
