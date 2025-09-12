@@ -395,7 +395,7 @@ export function NavbarModalPortal({
 }: {
   open: boolean;
   onClose: () => void;
-  closeBtnRef: React.RefObject<HTMLButtonElement>;
+  closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
   modalLinks: { name: string; href: string; Icon: (p: React.SVGProps<SVGSVGElement>) => React.ReactElement }[];
   pathname: string | null;
 }) {
@@ -470,7 +470,7 @@ export function CartModalPortal({
 }: {
   open: boolean;
   onClose: () => void;
-  closeBtnRef: React.RefObject<HTMLButtonElement>;
+  closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
   items: { id: string; name: string; price: number; image?: string; quantity: number }[];
   total: number;
   setQuantity: (id: string, qty: number) => void;
