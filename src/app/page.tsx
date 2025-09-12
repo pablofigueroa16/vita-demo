@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 function CRMIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -86,75 +86,128 @@ const cards = [
 ] as const;
 
 function EventsSection() {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(0); // índice global destacado
+  const [start, setStart] = useState(0);   // primer índice visible en el carrusel
+  const eventImages = [
+    "/eventos/1.png",
+    "/eventos/2.png",
+    "/eventos/3.png",
+    "/eventos/4.png",
+    "/eventos/5.png",
+    "/eventos/6.png",
+    "/eventos/7.png",
+  ];
+  const visibleCount = 4;
+  const maxStart = Math.max(0, eventImages.length - visibleCount);
+
+  // Mantener el destacado dentro de la ventana visible
+  useEffect(() => {
+    if (active < start || active > start + (visibleCount - 1)) {
+      setActive(start);
+    }
+  }, [start, active]);
+
+  const handlePrev = () => setStart((s) => Math.max(0, s - 1));
+  const handleNext = () => setStart((s) => Math.min(maxStart, s + 1));
+
+  const visible = eventImages.slice(start, start + visibleCount);
 
   return (
     <div className="mt-4 sm:mt-6 md:mt-8">
-      <div
-        className="flex gap-2 sm:gap-4 lg:gap-6 h-56 sm:h-60 md:h-64 lg:h-72 select-none overflow-x-auto md:overflow-visible snap-x snap-mandatory px-2 pr-4 sm:px-3 md:px-0"
-        onMouseLeave={() => setActive(0)}
-        aria-label="Eventos y promociones del marketplace"
-        role="list"
-      >
-        {cards.map((card, i) => {
-          const Icon = card.Icon;
-          const isActive = active === i;
-          return (
-            <article
-              key={card.id}
-              role="listitem"
-              tabIndex={0}
-              onMouseEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onClick={() => setActive(i)}
-              className={[
-                "group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm",
-                "transition-all duration-300 ease-out snap-start shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400",
-                "min-w-[70%] sm:min-w-[55%] md:min-w-0 md:flex-1",
-                isActive ? "md:flex-[2_1_0%] ring-1 ring-primary-400/60 shadow-xl" : "md:flex-[1_1_0%] opacity-90",
-              ].join(" ")}
-            >
-              <div className={`absolute inset-0 rounded-2xl pointer-events-none bg-gradient-to-br ${card.accent} opacity-20`} />
-              <div className="relative overflow-hidden p-4 sm:p-5 md:p-6 flex h-full flex-col gap-2.5 sm:gap-3 md:gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-border-subtle bg-bg-900/60 px-2.5 py-1 text-[11px] sm:text-xs text-text-secondary">
-                    <Icon className="w-4 h-4 md:w-5 md:h-5 text-primary-400" />
-                    {card.label}
-                  </span>
+      <div className="relative" onMouseLeave={() => setActive(start)}>
+        {/* Flechas de navegación */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
+          aria-label="Anterior"
+          disabled={start === 0}
+        >
+          <ArrowIcon className="w-5 h-5 rotate-180" />
+        </button>
+        <button
+          type="button"
+          onClick={handleNext}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
+          aria-label="Siguiente"
+          disabled={start === maxStart}
+        >
+          <ArrowIcon className="w-5 h-5" />
+        </button>
+
+        {/* Pista del carrusel: 4 tarjetas visibles siempre */}
+        <div
+          className="flex gap-2 sm:gap-4 lg:gap-6 overflow-hidden px-2 sm:px-3 md:px-0"
+          role="list"
+          aria-label="Eventos y promociones del marketplace"
+        >
+          {visible.map((src, idx) => {
+            const i = start + idx; // índice global
+            const isActive = active === i;
+            return (
+              <article
+                key={src}
+                role="listitem"
+                tabIndex={0}
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                onClick={() => setActive(i)}
+                className={[
+                  "group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm",
+                  "transition-all duration-300 ease-out shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400",
+                  // Distribución: destacado ocupa 2 fracciones, otras 1 (total 5)
+                  isActive ? "flex-[2_1_0%]" : "flex-[1_1_0%]",
+                  "basis-0 aspect-[40/21]", // article define tamaño exacto
+                ].join(" ")}
+              >
+                {/* Contenedor ocupa 100% del article */}
+                <div className="absolute inset-0 overflow-hidden">
+                  {/* Capa 1: cover (vista parcial) */}
+                  <img
+                    src={src}
+                    alt=""
+                    aria-hidden
+                    className={[
+                      "absolute inset-0 w-full h-full object-cover object-center pointer-events-none block",
+                      "transition-opacity transition-transform duration-300 ease-out will-change-transform",
+                      isActive ? "opacity-0 scale-100" : "opacity-100 scale-100",
+                    ].join(" ")}
+                    loading="lazy"
+                    decoding="async"
+                  />
+              
+                  {/* Capa 2: contain (contenido completo) */}
+                  <img
+                    src={src}
+                    alt={`Evento ${i + 1}`}
+                    className={[
+                      "absolute inset-0 w-full h-full object-contain object-center pointer-events-none block",
+                      "transition-opacity transition-transform duration-300 ease-out will-change-transform",
+                      isActive ? "opacity-100 scale-100" : "opacity-0 scale-95",
+                    ].join(" ")}
+                    loading="lazy"
+                    decoding="async"
+                  />
+              
+                  {/* Overlay sutil para contraídas */}
+                  {!isActive && (
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg-900/0 via-bg-900/0 to-bg-900/10" />
+                  )}
+              
+                  {/* Botón superpuesto en esquina inferior izquierda con ~10px de margen */}
+                  <button
+                    className="absolute inline-flex items-center gap-2 rounded-lg bg-primary-600 px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm md:text-sm lg:text-base font-medium text-text-on-primary transition-colors hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                    style={{ left: 10, bottom: 10 }}
+                    aria-label={`Ver evento ${i + 1}`}
+                  >
+                    Ver evento
+                    <ArrowIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  </button>
                 </div>
-                <h3
-                  className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-text-strong"
-                  style={!isActive ? ({
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  } as React.CSSProperties) : undefined}
-                >
-                  {card.title}
-                </h3>
-                <p
-                  className="text-sm sm:text-base md:text-base text-text-secondary leading-relaxed flex-1 overflow-hidden"
-                  style={!isActive ? ({
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                  } as React.CSSProperties) : undefined}
-                >
-                  {card.desc}
-                </p>
-                <button
-                  className="self-start mt-auto inline-flex items-center gap-2 rounded-lg bg-primary-600 px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm md:text-sm lg:text-base font-medium text-text-on-primary transition-colors hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 max-w-full break-words text-left"
-                  aria-label={card.cta}
-                >
-                  {card.cta}
-                  <ArrowIcon className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
-              </div>
-            </article>
-          );
-        })}
+              </article>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -443,9 +496,9 @@ type Store = {
 };
 
 const stores: Store[] = [
-  { id: "s-1", name: "Gold Rosse", category: "Moda", creator: "Jose Rubio", rating: 5, productsCount: 24, salesCount: 1200, slug: "gold-rosse", logo: "/tiendas/gold-rosse/goldrosse-logo.jpg" },
-  { id: "s-2", name: "Casa & Confort", category: "Hogar", creator: "@ana", rating: 4, productsCount: 80, salesCount: 2100, slug: "casa-confort" },
-  { id: "s-3", name: "Urban Outfit", category: "Moda", creator: "@diego", rating: 5, productsCount: 150, salesCount: 5600, slug: "urban-outfit" },
+  { id: "s-1", name: "Gold Rosse", category: "Moda", creator: "Jose Rubio", rating: 5, productsCount: 24, salesCount: 1200, slug: "gold-rosse", logo: "/tiendas/gold-rosse/goldrosse.png" },
+  { id: "s-2", name: "Casa & Confort", category: "Hogar", creator: "@ana", rating: 4, productsCount: 80, salesCount: 2100, slug: "casa-confort" , logo: "/tiendas/gold-rosse/casa&confort.png"},
+  { id: "s-3", name: "Urban Outfit", category: "Moda", creator: "@diego", rating: 5, productsCount: 150, salesCount: 5600, slug: "urban-outfit" , logo: "/tiendas/gold-rosse/urbanoufit.png"},
 ];
 
 function StoreImage({ store }: { store: Store }) {
@@ -455,7 +508,7 @@ function StoreImage({ store }: { store: Store }) {
         <img
           src={store.logo}
           alt={`Logo de ${store.name}`}
-          className="absolute inset-0 w-full h-full object-contain p-4"
+          className="absolute inset-0 w-full h-full object-cover object-center"
           loading="lazy"
           decoding="async"
         />

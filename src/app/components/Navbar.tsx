@@ -15,9 +15,10 @@ type NavItem = {
 // Conjunto de íconos inline (sin dependencias extra)
 const MarketplaceIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" {...props}>
-    <path d="M3 10l1.8-5.4A2 2 0 0 1 6.7 3h10.6a2 2 0 0 1 1.9 1.6L21 10" />
-    <path d="M3 10h18v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7z" />
-    <path d="M8 14h8" />
+    {/* Icono de Home */}
+    <path d="M3 10l9-7 9 7" />
+    <path d="M5 10v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V10" />
+    <path d="M10 22V12h4v10" />
   </svg>
 );
 
@@ -106,7 +107,7 @@ const SettingsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 const items: NavItem[] = [
-  { name: "Marketplace", href: "/", Icon: MarketplaceIcon },
+  { name: "Home", href: "/", Icon: MarketplaceIcon },
   { name: "Tiendas", href: "/tiendas", Icon: StoreIcon },
   { name: "Chat", href: "/chat", Icon: ChatIcon },
   { name: "Notificaciones", href: "#", Icon: BellIcon },
