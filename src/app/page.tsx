@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useCart } from "./components/CartContext";
 
 function CRMIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -461,6 +462,7 @@ function ProductsSection() {
   const [query, setQuery] = useState("");
   const [activeCat, setActiveCat] = useState<typeof productCategories[number]>("Todos");
   const [added, setAdded] = useState<Record<string, boolean>>({});
+  const { addItem } = useCart();
 
   const filtered = products.filter((p) => {
     const matchCat = activeCat === "Todos" ? true : p.category === activeCat;
@@ -471,6 +473,10 @@ function ProductsSection() {
 
   const toggleAdd = (id: string) => {
     setAdded((prev) => ({ ...prev, [id]: !prev[id] }));
+    const p = products.find((x) => x.id === id);
+    if (p) {
+      addItem({ id: p.id, name: p.name, price: p.price, image: p.image }, 1);
+    }
   };
 
   return (
