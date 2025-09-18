@@ -218,148 +218,98 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 inset-x-0 z-50 bg-bg-800/95 backdrop-blur supports-[backdrop-filter]:bg-bg-800/80 border-b border-border-subtle">
-        <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
-          <div className="h-16 flex items-center justify-between gap-3">
-            {/* Izquierda: Logo */}
-            <Link
-              href="/"
-              className="flex items-center gap-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 rounded-md"
-            >
-              <Image
-                src="/vita-logo.png"
-                alt="Vita"
-                width={62}
-                height={62}
-                className="h-20 w-20 object-contain"
-                priority
-              />
-            </Link>
-
-            {/* Centro: botón de menú (reemplaza el menú previo) */}
-            <div className="flex-1" />
-
-            {/* Derecha: Avatar + Interruptor de tema + Carrito */}
+      <nav className="fixed top-3 inset-x-0 z-50">
+        <div className="mx-auto max-w-7xl px-3 sm:px-4">
+          <div className="rounded-full bg-bg-800/90 supports-[backdrop-filter]:bg-bg-800/70 backdrop-blur-md ring-1 ring-border-subtle shadow-lg shadow-black/20">
+            <div className="h-14 flex items-center justify-between gap-3 px-2 sm:px-3">
+             {/* Izquierda: menú + logo */}
             <div className="flex items-center gap-2">
-              {/* Interruptor de tema */}
-              <button
-                type="button"
-                onClick={() => setIsLight((v) => !v)}
-                className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
-                aria-pressed={isLight}
-                aria-label={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
-                title={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
-              >
-                <span className="sr-only">{isLight ? "Modo claro activado" : "Modo oscuro activado"}</span>
-                {isLight ? (
-                  <SunIcon className="size-5 text-current" />
-                ) : (
-                  <MoonIcon className="size-5 text-current" />
-                )}
-              </button>
-
-              {/* Botón de menú junto al cambio de tema */}
-              <button
-                id="open-nav"
-                type="button"
-                onClick={() => setMenuOpen(true)}
-                aria-haspopup="dialog"
-                aria-expanded={menuOpen}
-                aria-controls="nav-modal"
-                className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition"
-              >
-                <MenuIcon className="size-5 text-current" />
-                <span className="sr-only">Abrir menú de navegación</span>
-              </button>
-
-              {/* Avatar */}
-              <button
-                type="button"
-                className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-shadow"
-                aria-label="Perfil de usuario"
-              >
-                <Image
-                  src="/user-perfil.jpeg"
-                  alt="Usuario"
-                  width={36}
-                  height={36}
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-              </button>
-              {/* Carrito */}
-              <button
-                type="button"
-                onClick={() => setCartOpen(true)}
-                aria-haspopup="dialog"
-                aria-expanded={cartOpen}
-                aria-controls="cart-modal"
-                className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition"
-                aria-label="Abrir carrito"
-                title="Carrito"
-              >
-                <CartIcon className="size-5 text-current" />
-                {count > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary-600 text-text-on-primary text-[10px] leading-[18px] text-center font-semibold shadow">
-                    {count}
-                  </span>
-                )}
-              </button>
-            </div>
+               <button
+                 id="open-nav"
+                 type="button"
+                 onClick={() => setMenuOpen(true)}
+                 aria-haspopup="dialog"
+                 aria-expanded={menuOpen}
+                 aria-controls="nav-modal"
+                 className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition"
+               >
+                 <MenuIcon className="size-5 text-current" />
+                 <span className="sr-only">Abrir menú de navegación</span>
+               </button>
+               <Link
+                 href="/"
+                 className="flex items-center gap-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 rounded-md"
+               >
+                 <Image
+                   src="/vita-logo.png"
+                   alt="Vita"
+                   width={80}
+                   height={24}
+                   className="h-7 w-auto object-contain"
+                   priority
+                 />
+               </Link>
+             </div>
+ 
+             {/* Centro vacío para balancear */}
+             <div className="flex-1" />
+ 
+             {/* Derecha: Interruptor de tema + Carrito + Avatar */}
+            <div className="flex items-center gap-2">
+               {/* Interruptor de tema */}
+               <button
+                 type="button"
+                 onClick={() => setIsLight((v) => !v)}
+                 className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-colors"
+                 aria-pressed={isLight}
+                 aria-label={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
+                 title={isLight ? "Cambiar a modo oscuro" : "Cambiar a modo claro"}
+               >
+                 <span className="sr-only">{isLight ? "Modo claro activado" : "Modo oscuro activado"}</span>
+                 {isLight ? (
+                   <SunIcon className="size-5 text-current" />
+                 ) : (
+                   <MoonIcon className="size-5 text-current" />
+                 )}
+               </button>
+ 
+               {/* Avatar */}
+               <button
+                 type="button"
+                 className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-shadow"
+                 aria-label="Perfil de usuario"
+               >
+                 <Image
+                   src="/user-perfil.jpeg"
+                   alt="Usuario"
+                   width={36}
+                   height={36}
+                   className="h-9 w-9 rounded-full object-cover"
+                 />
+               </button>
+               {/* Carrito */}
+               <button
+                 type="button"
+                 onClick={() => setCartOpen(true)}
+                 aria-haspopup="dialog"
+                 aria-expanded={cartOpen}
+                 aria-controls="cart-modal"
+                 className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition"
+                 aria-label="Abrir carrito"
+                 title="Carrito"
+               >
+                 <CartIcon className="size-5 text-current" />
+                 {count > 0 && (
+                   <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary-600 text-text-on-primary text-[10px] leading-[18px] text-center font-semibold shadow">
+                     {count}
+                   </span>
+                 )}
+               </button>
+             </div>
           </div>
+         </div>
         </div>
-
-        {/* Modal de navegación vertical */}
-        {false && (
-          <div className="fixed inset-x-0 bottom-0 top-16 z-[60]">
-            <div
-              className="absolute inset-0 bg-black/50"
-              onClick={() => setMenuOpen(false)}
-              aria-hidden="true"
-            />
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="nav-modal-title"
-              id="nav-modal"
-              className="absolute bottom-4 right-4 w-[min(92vw,480px)] max-w-md rounded-2xl border border-border-subtle bg-bg-800/95 backdrop-blur shadow-xl p-4 sm:p-6 focus:outline-none"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between">
-                <h2 id="nav-modal-title" className="text-lg font-semibold text-text-strong">Navegación</h2>
-                <button
-                  ref={closeBtnRef}
-                  type="button"
-                  onClick={() => setMenuOpen(false)}
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800"
-                  aria-label="Cerrar menú"
-                >
-                  <CloseIcon className="size-5 text-current" />
-                </button>
-              </div>
-        
-              <nav className="mt-4">
-                <ul className="flex flex-col gap-2">
-                  {modalLinks.map((link) => (
-                    <li key={link.name}>
-                      <Link
-                        href={link.href}
-                        onClick={() => setMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-3.5 py-2.5 border border-transparent hover:border-border-subtle hover:bg-bg-hover text-text-secondary hover:text-text-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 ${
-                          pathname === link.href && link.href !== "#" ? "bg-primary-700/15 text-primary-200 border-border-subtle" : ""
-                        }`}
-                        aria-current={pathname === link.href && link.href !== "#" ? "page" : undefined}
-                      >
-                        <link.Icon className="size-5 text-current" />
-                        <span className="text-sm font-medium">{link.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-          </div>
-        )}
-      </nav>
+         </nav>
 
       <NavbarModalPortal
         open={menuOpen}
@@ -384,8 +334,8 @@ export default function Navbar() {
     );
 }
 
-{/* Modal de navegación vertical: AHORA EN PORTAL, POR DEBAJO DEL NAVBAR */}
-{/* Nota: el componente Navbar es client, por lo que document existe en cliente. */}
+// Modal de navegación vertical: AHORA EN PORTAL, POR DEBAJO DEL NAVBAR
+// Nota: el componente Navbar es client, por lo que document existe en cliente.
 export function NavbarModalPortal({
   open,
   onClose,
@@ -430,7 +380,7 @@ export function NavbarModalPortal({
               <CloseIcon className="size-5 text-current" />
             </button>
           </div>
-
+      
           <nav className="mt-4">
             <ul className="flex flex-col gap-2">
               {modalLinks.map((link) => (
@@ -481,7 +431,7 @@ export function CartModalPortal({
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   if (!open || typeof window === "undefined") return null;
-
+  
   const handleFinalize = () => {
     setError(null);
     if (!items.length) {
@@ -500,7 +450,7 @@ export function CartModalPortal({
       onClose();
     }, 1200);
   };
-
+  
   return createPortal(
     <div className="fixed inset-x-0 top-16 bottom-0 z-40">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
@@ -525,7 +475,7 @@ export function CartModalPortal({
               <CloseIcon className="size-5 text-current" />
             </button>
           </div>
-
+      
           {success && (
             <div role="status" aria-live="polite" className="mt-3 rounded-lg border border-success-600/40 bg-success-600/15 text-success-300 px-3 py-2 text-sm">
               ¡Compra finalizada con éxito!
@@ -536,7 +486,7 @@ export function CartModalPortal({
               {error}
             </div>
           )}
-
+      
           <div className="mt-4 space-y-3 max-h-[45vh] overflow-y-auto pr-1">
             {items.length === 0 ? (
               <p className="text-sm text-text-secondary">Tu carrito está vacío.</p>
@@ -583,7 +533,7 @@ export function CartModalPortal({
               ))
             )}
           </div>
-
+      
           <div className="mt-4 border-t border-border-subtle pt-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-text-secondary">Total</span>
