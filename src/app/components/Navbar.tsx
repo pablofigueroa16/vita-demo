@@ -155,6 +155,9 @@ export default function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const cartCloseBtnRef = useRef<HTMLButtonElement | null>(null);
   const { state, count, total, setQuantity, removeItem, clear } = useCart();
+  // Medir altura actual del navbar para posicionar los portales sin desfasajes
+  const navRef = useRef<HTMLElement | null>(null);
+  const [navOffset, setNavOffset] = useState<number>(0);
 
   // Estado de tema (derivado del DOM y localStorage)
   const [isLight, setIsLight] = useState<boolean>(() => {
@@ -216,9 +219,29 @@ export default function Navbar() {
     }
   };
 
+  // Sincronizar offset del navbar con cambios de tamaño/responsive
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const update = () => {
+      try {
+        const r = el.getBoundingClientRect();
+        setNavOffset(Math.max(0, Math.round(r.bottom)));
+      } catch {}
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   return (
     <>
-      <nav className="fixed top-3 inset-x-0 z-50">
+      <nav ref={navRef} className="fixed top-3 inset-x-0 z-50">
         <div className="mx-auto max-w-7xl px-3 sm:px-4">
           <div className="rounded-full bg-bg-800/90 supports-[backdrop-filter]:bg-bg-800/70 backdrop-blur-md ring-1 ring-border-subtle shadow-lg shadow-black/20">
             <div className="h-14 flex items-center justify-between gap-3 px-2 sm:px-3">
@@ -241,11 +264,11 @@ export default function Navbar() {
                  className="flex items-center gap-2 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 rounded-md"
                >
                  <Image
-                   src="/vita-logo.png"
+                   src={isLight ? "/vita-logo-negro.png" : "/vita-logo-blanco.png"}
                    alt="Vita"
                    width={80}
                    height={24}
-                   className="h-7 w-auto object-contain"
+                   className="h-12 w-auto object-contain"
                    priority
                  />
                </Link>
@@ -273,20 +296,7 @@ export default function Navbar() {
                  )}
                </button>
  
-               {/* Avatar */}
-               <button
-                 type="button"
-                 className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-shadow"
-                 aria-label="Perfil de usuario"
-               >
-                 <Image
-                   src="/user-perfil.jpeg"
-                   alt="Usuario"
-                   width={36}
-                   height={36}
-                   className="h-9 w-9 rounded-full object-cover"
-                 />
-               </button>
+               
                {/* Carrito */}
                <button
                  type="button"
@@ -305,6 +315,20 @@ export default function Navbar() {
                    </span>
                  )}
                </button>
+               {/* Avatar */}
+               <button
+                 type="button"
+                 className="relative inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-inset ring-border-subtle hover:ring-primary-400/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-800 transition-shadow"
+                 aria-label="Perfil de usuario"
+               >
+                 <Image
+                   src="/user-perfil.jpeg"
+                   alt="Usuario"
+                   width={36}
+                   height={36}
+                   className="h-9 w-9 rounded-full object-cover"
+                 />
+               </button>
              </div>
           </div>
          </div>
@@ -317,6 +341,7 @@ export default function Navbar() {
         closeBtnRef={closeBtnRef}
         modalLinks={modalLinks}
         pathname={pathname}
+        topOffset={navOffset}
       />
 
       <CartModalPortal
@@ -329,6 +354,7 @@ export default function Navbar() {
         removeItem={removeItem}
         clear={clear}
         formatCurrency={formatCurrency}
+        topOffset={navOffset}
       />
       </>
     );
@@ -342,32 +368,34 @@ export function NavbarModalPortal({
   closeBtnRef,
   modalLinks,
   pathname,
-}: {
-  open: boolean;
-  onClose: () => void;
-  closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
-  modalLinks: { name: string; href: string; Icon: (p: React.SVGProps<SVGSVGElement>) => React.ReactElement }[];
+  topOffset,
+ }: {
+   open: boolean;
+   onClose: () => void;
+   closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
+   modalLinks: { name: string; href: string; Icon: (p: React.SVGProps<SVGSVGElement>) => React.ReactElement }[];
   pathname: string | null;
-}) {
+  topOffset: number;
+ }) {
   if (!open || typeof window === "undefined") return null;
   return createPortal(
-    <div className="fixed inset-x-0 top-16 bottom-0 z-40">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      {/* Contenedor flex para centrar verticalmente y alinear a la derecha */}
-      <div className="absolute inset-0 flex items-center justify-end p-4 pointer-events-none">
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="nav-modal-title"
-          id="nav-modal"
-          className="pointer-events-auto w-[min(92vw,480px)] max-w-md rounded-2xl border border-border-subtle bg-bg-800/95 backdrop-blur shadow-xl p-4 sm:p-6 focus:outline-none"
-          onClick={(e) => e.stopPropagation()}
-        >
+<div className="fixed inset-0 z-40">
+       {/* Overlay */}
+       <div
+         className="absolute inset-0 bg-black/50"
+         onClick={onClose}
+         aria-hidden="true"
+       />
+       {/* Contenedor flex para centrar verticalmente y alinear a la derecha */}
+      <div className="absolute inset-0 flex items-center justify-end pr-4 pb-4 pl-4 pointer-events-none" style={{ paddingTop: topOffset }}>
+         <div
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="nav-modal-title"
+           id="nav-modal"
+           className="pointer-events-auto w-[min(92vw,480px)] max-w-md rounded-2xl border border-border-subtle bg-bg-800/95 backdrop-blur shadow-xl p-4 sm:p-6 focus:outline-none"
+           onClick={(e) => e.stopPropagation()}
+         >
           <div className="flex items-center justify-between">
             <h2 id="nav-modal-title" className="text-lg font-semibold text-text-strong">Navegación</h2>
             <button
@@ -417,17 +445,19 @@ export function CartModalPortal({
   removeItem,
   clear,
   formatCurrency,
-}: {
-  open: boolean;
-  onClose: () => void;
-  closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
-  items: { id: string; name: string; price: number; image?: string; quantity: number }[];
-  total: number;
-  setQuantity: (id: string, qty: number) => void;
-  removeItem: (id: string) => void;
-  clear: () => void;
-  formatCurrency: (n: number) => string;
-}) {
+  topOffset,
+ }: {
+   open: boolean;
+   onClose: () => void;
+   closeBtnRef: React.RefObject<HTMLButtonElement | null> | React.MutableRefObject<HTMLButtonElement | null>;
+   items: { id: string; name: string; price: number; image?: string; quantity: number }[];
+   total: number;
+   setQuantity: (id: string, qty: number) => void;
+   removeItem: (id: string) => void;
+   clear: () => void;
+   formatCurrency: (n: number) => string;
+   topOffset: number;
+ }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   if (!open || typeof window === "undefined") return null;
@@ -452,17 +482,17 @@ export function CartModalPortal({
   };
   
   return createPortal(
-    <div className="fixed inset-x-0 top-16 bottom-0 z-40">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
-      <div className="absolute inset-0 flex items-center justify-end p-4 pointer-events-none">
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="cart-modal-title"
-          id="cart-modal"
-          className="pointer-events-auto w-[min(92vw,520px)] max-w-md rounded-2xl border border-border-subtle bg-bg-800/95 backdrop-blur shadow-xl p-4 sm:p-6 focus:outline-none"
-          onClick={(e) => e.stopPropagation()}
-        >
+<div className="fixed inset-0 z-40">
+       <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 flex items-center justify-end pr-4 pb-4 pl-4 pointer-events-none" style={{ paddingTop: topOffset }}>
+         <div
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="cart-modal-title"
+           id="cart-modal"
+           className="pointer-events-auto w-[min(92vw,520px)] max-w-md rounded-2xl border border-border-subtle bg-bg-800/95 backdrop-blur shadow-xl p-4 sm:p-6 focus:outline-none"
+           onClick={(e) => e.stopPropagation()}
+         >
           <div className="flex items-center justify-between">
             <h2 id="cart-modal-title" className="text-lg font-semibold text-text-strong">Tu carrito</h2>
             <button

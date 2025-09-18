@@ -87,8 +87,19 @@ const cards = [
 ] as const;
 
 function EventsSection() {
-  const [active, setActive] = useState(0); // índice global destacado
-  const [start, setStart] = useState(0);   // primer índice visible en el carrusel
+  // Índice del primer slide visible (clásico)
+  const [index, setIndex] = useState(0);
+  // Slides visibles por viewport (Fijar a 2)
+  const [spv, setSpv] = useState(2);
+  // Arrastre táctil
+  const touchStartX = useRef<number | null>(null);
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  // Auto‑play
+  const autoplayDelay = 4500;
+  const pausedRef = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const eventImages = [
     "/eventos/1.png",
     "/eventos/2.png",
@@ -98,210 +109,175 @@ function EventsSection() {
     "/eventos/6.png",
     "/eventos/7.png",
   ];
-  const visibleCount = 4;
-  const maxStart = Math.max(0, eventImages.length - visibleCount);
-  // Auto-play y control de pausa/gestos
-  const autoplayDelay = 4000; // ms
-  const pausedRef = useRef(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const touchStartX = useRef<number | null>(null);
-  const [dragX, setDragX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const setPaused = (p: boolean) => {
-    pausedRef.current = p;
-  };
-  const handlePrev = () =>
-    setStart((s) => {
-      const ns = Math.max(0, s - 1);
-      setActive(ns);
-      return ns;
-    });
-  const handleNext = () =>
-    setStart((s) => {
-      const ns = Math.min(maxStart, s + 1);
-      setActive(ns);
-      return ns;
-    });
 
-  const autoAdvance = () =>
-    setStart((s) => {
-      const ns = s >= maxStart ? 0 : s + 1;
-      setActive(ns);
-      return ns;
+  // Fijar siempre 2 slides por vista y ajustar índice si cambia la lista
+  useEffect(() => {
+    setSpv(() => {
+      const next = 2;
+      const max = Math.max(0, eventImages.length - next);
+      setIndex((i) => Math.min(i, max));
+      return next;
     });
+  }, [eventImages.length]);
+  const maxIndex = Math.max(0, eventImages.length - spv);
 
-  // Intervalo de auto-play
+  const setPaused = (p: boolean) => { pausedRef.current = p; };
+
+  const next = () => setIndex((i) => Math.min(i + 1, maxIndex));
+  const prev = () => setIndex((i) => Math.max(i - 1, 0));
+
+  // Auto‑play clásico
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
       if (!pausedRef.current) {
-        autoAdvance();
+        setIndex((i) => (i >= maxIndex ? 0 : i + 1));
       }
     }, autoplayDelay);
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [maxStart]);
+    return () => intervalRef.current && clearInterval(intervalRef.current);
+  }, [maxIndex]);
 
-  const visible = eventImages.slice(start, start + visibleCount);
+  // Teclado para accesibilidad
+  const onKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); next(); }
+    if (e.key === "ArrowLeft")  { e.preventDefault(); prev(); }
+  };
+
+  const percentPerSlide = 100 / Math.max(1, spv);
+  const baseTranslate = -index * percentPerSlide; // %
 
   return (
     <div className="mt-4 sm:mt-6 md:mt-8">
       <div
         className="relative"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Eventos y promociones del marketplace"
+        tabIndex={0}
+        onKeyDown={onKey}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
       >
-         {/* Flechas de navegación */}
-         <button
-           type="button"
-           onClick={handlePrev}
-           className="absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
-           aria-label="Anterior"
-           disabled={start === 0}
-         >
-           <ArrowIcon className="w-5 h-5 rotate-180" />
-         </button>
-         <button
-           type="button"
-           onClick={handleNext}
-           className="absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
-           aria-label="Siguiente"
-           disabled={start === maxStart}
-         >
-           <ArrowIcon className="w-5 h-5" />
-         </button>
- 
-         {/* Pista del carrusel: móvil 1 tarjeta, desktop 4 tarjetas */}
-         <div
-           className="flex gap-2 sm:gap-4 lg:gap-6 overflow-hidden px-2 sm:px-3 md:px-0"
-           role="list"
-           aria-label="Eventos y promociones del marketplace"
-           onTouchStart={(e) => {
-             setPaused(true);
-             setIsDragging(true);
-             touchStartX.current = e.touches[0].clientX;
-             setDragX(0);
-           }}
-           onTouchMove={(e) => {
-             if (touchStartX.current == null) return;
-             const dx = e.touches[0].clientX - touchStartX.current;
-             setDragX(dx);
-           }}
-           onTouchEnd={() => {
-             const threshold = 50;
-             if (Math.abs(dragX) > threshold) {
-               if (dragX < 0) handleNext();
-               else handlePrev();
-             }
-             setDragX(0);
-             setIsDragging(false);
-             setPaused(false);
-             touchStartX.current = null;
-           }}
-           onTouchCancel={() => {
-             setDragX(0);
-             setIsDragging(false);
-             setPaused(false);
-             touchStartX.current = null;
-           }}
-         >
-           {visible.map((src, idx) => {
-             const i = start + idx; // índice global
-             const isActive = active === i;
-             return (
-               <article
-                 key={src}
-                 role="listitem"
-                 tabIndex={0}
-                 onMouseEnter={() => setActive(i)}
-                 onFocus={() => setActive(i)}
-                 onClick={() => setActive(i)}
-                 className={[
-                   "group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm",
-                   "transition-all duration-300 ease-out shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400",
-                   "will-change-transform transform-gpu",
-                   // Móvil: solo mostrar tarjeta activa, Desktop: distribución normal
-                   isActive ? "block" : "hidden sm:block",
-                   // Móvil: la tarjeta ocupa todo el ancho y no participa en el flujo flexible; Desktop: flex normal
-                   "flex-none basis-full w-full sm:basis-0 sm:w-auto",
-                   isActive ? "sm:flex-[2_1_0%]" : "sm:flex-[1_1_0%]",
-                   "aspect-[40/21]", // article define tamaño exacto
-                 ].join(" ")}
-                 style={
-                   isActive
-                     ? ({
-                         transform: `translateX(${dragX}px)`,
-                         transition: isDragging ? "none" : undefined,
-                       } as React.CSSProperties)
-                     : undefined
-                 }
-               >
-                 {/* Contenedor ocupa 100% del article */}
-                 <div className="absolute inset-0 overflow-hidden">
-                   {/* Capa 1: cover (vista parcial) - oculta en móvil */}
-                   <img
-                     src={src}
-                     alt=""
-                     aria-hidden
-                     className={[
-                       "absolute inset-0 w-full h-full object-cover object-center pointer-events-none block",
-                       "transition-opacity transition-transform duration-300 ease-out will-change-transform",
-                       // Móvil: siempre oculta (tarjetas siempre desplegadas)
-                       // Desktop: comportamiento normal
-                       "opacity-0 sm:opacity-100",
-                       isActive ? "sm:opacity-0 scale-100" : "sm:opacity-100 scale-100",
-                     ].join(" ")}
-                     loading="lazy"
-                     decoding="async"
-                   />
-                 
-                   {/* Capa 2: contain (contenido completo) - siempre visible en móvil */}
-                   <img
-                     src={src}
-                     alt={`Evento ${i + 1}`}
-                     className={[
-                       "absolute inset-0 w-full h-full object-contain object-center pointer-events-none block",
-                       "transition-opacity transition-transform duration-300 ease-out will-change-transform",
-                       // Móvil: siempre visible (tarjetas siempre desplegadas)
-                       // Desktop: solo visible cuando activa
-                       "opacity-100 sm:opacity-0",
-                       isActive ? "sm:opacity-100 scale-100" : "sm:opacity-0 scale-95",
-                     ].join(" ")}
-                     loading="lazy"
-                     decoding="async"
-                   />
-                 
-                   {/* Overlay sutil para contraídas - solo en desktop */}
-                   {!isActive && (
-                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-bg-900/0 via-bg-900/0 to-bg-900/10 hidden sm:block" />
-                   )}
-                 
-                   {/* Botón superpuesto - siempre visible en móvil */}
-                   <button
-                     className={[
-                       "absolute inline-flex items-center gap-2 rounded-lg bg-primary-600 px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm md:text-sm lg:text-base font-medium text-text-on-primary transition-all duration-300 ease-in-out hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400",
-                       // Móvil: siempre visible, Desktop: solo cuando activa
-                       "opacity-100 sm:opacity-0",
-                       isActive ? "sm:opacity-100" : "sm:opacity-0",
-                     ].join(" ")}
-                     style={{ left: 10, bottom: 10 }}
-                     aria-label={`Ver evento ${i + 1}`}
-                   >
-                     Ver evento
-                     <ArrowIcon className="w-4 h-4 md:w-5 md:h-5" />
-                   </button>
-                 </div>
-               </article>
-             );
-           })}
-         </div>
-       </div>
-     </div>
-   );
- }
+        {/* Flechas */}
+        <button
+          type="button"
+          onClick={prev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
+          aria-label="Anterior"
+          disabled={index === 0}
+        >
+          <ArrowIcon className="w-5 h-5 rotate-180" />
+        </button>
+        <button
+          type="button"
+          onClick={next}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 inline-flex items-center justify-center rounded-full bg-bg-900/70 border border-border-subtle p-2 text-text-primary hover:bg-bg-900/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-40"
+          aria-label="Siguiente"
+          disabled={index === maxIndex}
+        >
+          <ArrowIcon className="w-5 h-5" />
+        </button>
+
+        {/* Viewport */}
+        <div
+          className="overflow-hidden px-2 sm:px-3 md:px-0"
+          role="group"
+          aria-atomic="false"
+          onTouchStart={(e) => {
+            setPaused(true);
+            setIsDragging(true);
+            touchStartX.current = e.touches[0].clientX;
+            setDragX(0);
+          }}
+          onTouchMove={(e) => {
+            if (touchStartX.current == null) return;
+            const dx = e.touches[0].clientX - touchStartX.current;
+            setDragX(dx);
+          }}
+          onTouchEnd={() => {
+            const threshold = 50;
+            if (Math.abs(dragX) > threshold) {
+              if (dragX < 0) next(); else prev();
+            }
+            setDragX(0);
+            setIsDragging(false);
+            setPaused(false);
+            touchStartX.current = null;
+          }}
+          onTouchCancel={() => {
+            setDragX(0);
+            setIsDragging(false);
+            setPaused(false);
+            touchStartX.current = null;
+          }}
+        >
+          {/* Track */}
+          <div
+            className="flex gap-2 sm:gap-4 lg:gap-6 will-change-transform"
+            style={{
+              transform: `translateX(calc(${baseTranslate}% + ${dragX}px))`,
+              transition: isDragging ? "none" : "transform 400ms cubic-bezier(0.22, 1, 0.36, 1)",
+            }}
+          >
+            {eventImages.map((src, i) => (
+              <article
+                key={src}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`Slide ${i + 1} de ${eventImages.length}`}
+                className="group relative overflow-hidden rounded-2xl border border-border-subtle bg-bg-800/80 backdrop-blur-sm flex-none aspect-[40/21]"
+                style={{ flexBasis: `${percentPerSlide}%`, width: `${percentPerSlide}%` }}
+              >
+                <div className="absolute inset-0 overflow-hidden">
+                  <img
+                    src={src}
+                    alt={`Evento ${i + 1}`}
+                    className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none block"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <button
+                    className="absolute inline-flex items-center gap-2 rounded-lg bg-primary-600 px-3 py-1.5 sm:px-3.5 sm:py-2 text-sm md:text-sm lg:text-base font-medium text-text-on-primary transition-colors duration-200 hover:bg-primary-500 active:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400"
+                    style={{ left: 10, bottom: 10 }}
+                    aria-label={`Ver evento ${i + 1}`}
+                  >
+                    Ver evento
+                    <ArrowIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        {/* Indicadores (dots) */}
+        <div className="mt-3 flex items-center justify-center gap-2 select-none">
+          {Array.from({ length: maxIndex + 1 }).map((_, p) => {
+            const active = index === p;
+            return (
+              <button
+                key={p}
+                onClick={() => setIndex(p)}
+                className={[
+                  "h-2.5 rounded-full transition-all",
+                  active ? "bg-primary-500 w-6" : "bg-bg-600 w-2.5 hover:bg-bg-500",
+                ].join(" ")}
+                aria-label={`Ir al slide ${p + 1}`}
+                aria-current={active ? "true" : undefined}
+                style={{
+                  // Anchura visible amigable en pantallas táctiles
+                  minWidth: active ? 24 : 10,
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
  
 export default function Home() {
   return (
