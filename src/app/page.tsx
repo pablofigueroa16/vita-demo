@@ -134,7 +134,12 @@ function EventsSection() {
         setIndex((i) => (i >= maxIndex ? 0 : i + 1));
       }
     }, autoplayDelay);
-    return () => intervalRef.current && clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [maxIndex]);
 
   // Teclado para accesibilidad
